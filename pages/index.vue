@@ -2,7 +2,9 @@
   <v-row justify="center" align="center">
     <v-col cols="12" md="8">
       <v-card>
-        <v-card-title class="headline font-weight-bold">Subir archivo</v-card-title>
+        <v-card-title class="headline font-weight-bold"
+          >Subir archivo</v-card-title
+        >
         <v-card-text>
           <v-file-input
             v-model="file"
@@ -32,7 +34,9 @@
       </v-card>
       <br />
       <v-card v-if="fileUploaded">
-        <v-card-title class="headline font-weight-bold">Seleccionar separador</v-card-title>
+        <v-card-title class="headline font-weight-bold"
+          >Seleccionar separador</v-card-title
+        >
         <v-card-text>
           <v-select
             v-model="delimeter"
@@ -74,11 +78,25 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="red" dark elevation="2">Calcular</v-btn>
+          <v-btn color="red" dark elevation="2" @click="dialog = true"
+            >Calcular</v-btn
+          >
           <v-spacer />
         </v-card-actions>
       </v-card>
     </v-col>
+    <v-dialog v-model="dialog" persistent max-width="1000">
+      <v-card>
+        <v-card-title class="red white--text text-h5">
+          Resultado
+          <v-spacer />
+          <v-btn icon dark @click="dialog = false"
+            ><v-icon>mdi-close</v-icon></v-btn
+          >
+        </v-card-title>
+        <v-card-text></v-card-text>
+      </v-card>
+    </v-dialog>
   </v-row>
 </template>
 
@@ -87,6 +105,7 @@ export default {
   name: 'IndexPage',
   data() {
     return {
+      dialog: false,
       file: null,
       fileCSV: null,
       fileCSVString: '',
@@ -126,8 +145,8 @@ export default {
   methods: {
     /**
      * Función para convertir el .CSV a un array de Javascript
-     * @param {*} str Contenido del CSV en string
-     * @param {*} delimiter Separador de las columnas
+     * @param {string} str Contenido del CSV en string
+     * @param {string} delimiter Separador de las columnas , ó ;
      */
     csvToArray(str, delimiter = ',') {
       const headers = str.slice(0, str.indexOf('\n')).split(delimiter)
@@ -140,6 +159,61 @@ export default {
           return object
         }, {})
       })
+    },
+
+    /**
+     * Función para calcular la línea de regresión por mínimos cuadrados
+     * @param {Array<number>} valuesX
+     * @param {Array<number>} valuesY
+     */
+    findLineByLeastSquares(valuesX, valuesY) {
+      let sumX = 0
+      let sumY = 0
+      let sumXY = 0
+      let sumXX = 0
+      let count = 0
+
+      let x = 0
+      let y = 0
+      const valuesLength = valuesX.length
+
+      if (valuesLength !== valuesY.length) {
+        throw new Error(
+          'The parameters valuesX and valuesY need to have same size!'
+        )
+      }
+      if (valuesLength === 0) {
+        return [[], []]
+      }
+
+      for (let v = 0; v < valuesLength; v++) {
+        x = valuesX[v]
+        y = valuesY[v]
+        sumX += x
+        sumY += y
+        sumXX += x * x
+        sumXY += x * y
+        count++
+      }
+
+      /*
+       * Calcular m y b para la fórmula:
+       * y = x * m + b
+       */
+      const m = (count * sumXY - sumX * sumX) / (count * sumXX - sumX * sumX)
+      const b = sumY / count - (m * sumX) / count
+
+      const resultValuesX = []
+      const resultValuesY = []
+
+      for (let v = 0; v < valuesLength; v++) {
+        x = valuesX[v]
+        y = x * m + b
+        resultValuesX.push(x)
+        resultValuesY.push(y)
+      }
+
+      return [resultValuesX, resultValuesY]
     },
   },
 }
