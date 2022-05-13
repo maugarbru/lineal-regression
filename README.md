@@ -1,5 +1,7 @@
 # lineal-regression
 
+# Project deployed [:link: HERE](https://maugarbru.github.io/lineal-regression/)
+
 ## Build Setup
 
 ```bash
