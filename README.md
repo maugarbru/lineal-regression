@@ -1,6 +1,6 @@
 # lineal-regression
 
-# Project deployed [:link: HERE](https://maugarbru.github.io/lineal-regression/)
+# Acceder al aplicativo en este [:link: link](https://maugarbru.github.io/lineal-regression/)
 
 ## Build Setup
 
