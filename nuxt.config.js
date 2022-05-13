@@ -43,6 +43,12 @@ export default {
     customVariables: ['~/assets/variables.scss'],
     theme: {
       dark: false,
+      themes: {
+        light: {
+          primary: "#EE2323",
+          secondary: "#8bc34a",
+        }
+      }
     },
   },
 
