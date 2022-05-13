@@ -47,9 +47,13 @@
               </v-card>
             </v-card-text>
             <v-card-actions>
+              <v-alert v-if="error" dense type="error"
+                >Una de las variables corresponde a una variable no
+                numérica</v-alert
+              >
               <v-spacer />
-              <v-btn color="primary" @click="e1 = 2"
-                >Siguiente</v-btn
+              <v-btn :disabled="error" color="primary" @click="e1 = 2"
+                >Ver funcion</v-btn
               ></v-card-actions
             >
           </v-card>
@@ -58,48 +62,49 @@
         <v-stepper-content step="2">
           <v-card>
             <v-card-text>
-              <div>
-                <h2><code>y = B0 + B1 * X</code></h2>
-                <h2>
-                  <code>y = {{ beta0 }} + {{ beta1 }} * X</code>
-                </h2>
-              </div>
-
-              <v-sparkline
-                v-if="Yvalues"
-                :value="Yvalues"
-                color="red"
-                line-width="2"
-                padding="16"
-              ></v-sparkline>
-              <div>
-                <h2>
-                  Pendiente: <code>{{ beta1 }}</code>
-                </h2>
-                <h4 v-if="beta1 > 0">
-                  Como la pendiente es
-                  <span class="secondary--text font-weight-bold">POSITIVA</span
-                  >. Tienen una relación lineal directa.
-                </h4>
-                <h4 v-else-if="beta1 < 0">
-                  Como la pendiente es
-                  <span class="orange--text font-weight-bold">NEGATIVA</span>.
-                  Tienen una relación lineal inversa.
-                </h4>
-                <h4 v-else>
-                  Como la pendiente es
-                  <span class="black--text font-weight-bold">CERO</span>. No
-                  existe relación lineal.
-                </h4>
-              </div>
-              <h2>
-                Intersecto: <code>{{ beta0 }}</code>
-              </h2>
+              <v-row>
+                <v-col cols="12" sm="12"
+                  ><h2><code>y = B0 + B1 * X</code></h2></v-col
+                >
+                <v-col cols="12" sm="12"
+                  ><h2>
+                    <code>y = {{ beta0 }} + {{ beta1 }} * X</code>
+                  </h2></v-col
+                >
+                <v-col cols="12" sm="12"
+                  ><h2>
+                    Pendiente: <code>{{ beta1 }}</code>
+                  </h2></v-col
+                >
+                <v-col cols="12" sm="12">
+                  <h4 v-if="beta1 > 0">
+                    Como la pendiente es
+                    <span class="secondary--text font-weight-bold"
+                      >POSITIVA</span
+                    >. Tienen una relación lineal directa.
+                  </h4>
+                  <h4 v-else-if="beta1 < 0">
+                    Como la pendiente es
+                    <span class="orange--text font-weight-bold">NEGATIVA</span>.
+                    Tienen una relación lineal inversa.
+                  </h4>
+                  <h4 v-else>
+                    Como la pendiente es
+                    <span class="black--text font-weight-bold">CERO</span>. No
+                    existe relación lineal.
+                  </h4></v-col
+                >
+                <v-col cols="12" sm="12">
+                  <h2>
+                    Intersecto: <code>{{ beta0 }}</code>
+                  </h2></v-col
+                >
+              </v-row>
             </v-card-text>
             <v-card-actions
               ><v-btn text @click="e1 = 1">Atras</v-btn>
               <v-spacer />
-              <v-btn color="primary" @click="e1 = 3">Siguiente</v-btn>
+              <v-btn color="primary" @click="e1 = 3">Ver grafica</v-btn>
             </v-card-actions>
           </v-card>
         </v-stepper-content>
@@ -143,8 +148,6 @@ export default {
   },
   data() {
     return {
-      labels: ['12am', '3am', '6am', '9am', '12pm', '3pm', '6pm', '9pm'],
-      value: [200, 675, 410, 390, 310, 460, 250, 240],
       loading: true,
       dialog: false,
       e1: 1,
@@ -152,12 +155,13 @@ export default {
       original: null,
       beta0: null,
       beta1: null,
-      Yvalues: null,
+      error: false,
     }
   },
   watch: {},
   mounted() {
     this.loading = true
+    this.verifyIsDataValid()
     this.findLineByLeastSquares(this.data, this.column1, this.column2)
     this.loading = false
   },
@@ -197,7 +201,11 @@ export default {
       this.beta0 = beta0
       this.result = results
       this.original = dispersion
-      this.Yvalues = [results[0].y, results[results.length - 1].y]
+    },
+    verifyIsDataValid() {
+      this.error =
+        isNaN(parseFloat(this.data[0][this.column1]) +
+          parseFloat(this.data[0][this.column2]))
     },
   },
 }

@@ -54,6 +54,9 @@
         <v-card-title class="headline font-weight-bold"
           >Seleccionar columnas del CSV</v-card-title
         >
+        <v-card-subtitle
+          >*** Escoger variables numéricas</v-card-subtitle
+        >
         <v-card-text>
           <v-row>
             <v-col cols="12" md="6">
